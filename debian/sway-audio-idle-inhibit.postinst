@@ -9,12 +9,17 @@ set -e
 # The debhelper snippet below never removes the stale link on upgrade (it falls
 # through to update-state), so move it to graphical-session.target.wants here
 # and resync deb-systemd-helper's state so it records only the new link.
+# The 26.04 upgrade instructions have users delete the stale link by hand before
+# the upgrade. deb-systemd-helper then sees a missing link and treats the unit as
+# disabled, so it would never be enabled again. If its state still records the
+# old link, the package enabled it itself, so enable it at the new place too.
 unit=sway-audio-idle-inhibit.service
 old_link=/etc/systemd/user/default.target.wants/$unit
 new_link=/etc/systemd/user/graphical-session.target.wants/$unit
 state_dir=/var/lib/systemd/deb-systemd-user-helper-enabled
 if [ "$1" = "configure" ] && [ -z "$DPKG_ROOT" ] && [ -n "$2" ] && \
-   dpkg --compare-versions "$2" lt-nl 2.0.2 && [ -L "$old_link" ]; then
+   dpkg --compare-versions "$2" lt-nl 2.0.2 && \
+   { [ -L "$old_link" ] || grep -qsxF "$old_link" "$state_dir/$unit.dsh-also"; }; then
 	mkdir -p "$(dirname "$new_link")"
 	ln -sf "/usr/lib/systemd/user/$unit" "$new_link"
 	rm -f "$old_link" "$state_dir/default.target.wants/$unit"
