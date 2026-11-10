@@ -4,19 +4,22 @@ Priority: optional
 Maintainer: Soumya Ranjan Patnaik <soumyaranjan1812@gmail.com>
 Rules-Requires-Root: no
 Build-Depends:
- meson,
- libpulse-dev,
- libsystemd-dev,
- build-essential,
  debhelper-compat (= 13),
+ cargo (>= 1.89),
+ rustc (>= 1.89),
+ libpulse-dev (>= 1:8.0),
+ pkgconf,
 Standards-Version: 4.6.1
 Homepage: https://github.com/ErikReider/SwayAudioIdleInhibit
 
 Package: sway-audio-idle-inhibit
 Architecture: any
 Depends:
+ ${shlibs:Depends},
  ${misc:Depends},
- libpulse0,
- libsystemd0,
 Description: Prevents system from idling while
  an audio source or audio sink is active
+ .
+ Holds a gnome-session idle inhibitor while any PulseAudio playback or
+ recording stream is running, so both Regolith sessions stay awake while
+ audio plays. It can also print whether audio is active, for status bars.

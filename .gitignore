@@ -57,3 +57,6 @@ sway-audio-idle-inhibit-git*
 pkg
 
 !build-scripts/sway-audio-idle-inhibit-git.rpkg.spec
+
+# Rust build output
+/target/

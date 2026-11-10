@@ -6,10 +6,13 @@ PartOf=graphical-session.target
 After=graphical-session.target
 
 # The unit is enabled for every graphical session (graphical-session.target),
-# so without this it also runs in the Regolith X11 session, in GNOME sessions
-# and in the login screen. Only the Regolith Wayland session uses it: its
-# idle handling (swayidle) honours the logind idle inhibitor taken here.
-ConditionEnvironment=XDG_SESSION_DESKTOP=regolith-wayland
+# so without this it also runs in GNOME sessions and in the login screen.
+# Both Regolith sessions use it: they run under gnome-session, which honours
+# the idle inhibitor taken here (regolith-powerd mirrors it to swayidle in
+# the Wayland session). Each line below is a triggering condition: one match
+# is enough.
+ConditionEnvironment=|XDG_SESSION_DESKTOP=regolith-wayland
+ConditionEnvironment=|XDG_SESSION_DESKTOP=regolith-x11
 
 [Service]
 ExecStart=/usr/bin/sway-audio-idle-inhibit

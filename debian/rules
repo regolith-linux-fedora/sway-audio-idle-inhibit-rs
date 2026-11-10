@@ -1,26 +1,27 @@
 #!/usr/bin/make -f
 
-# See debhelper(7) (uncomment to enable).
-# Output every command that modifies files on the build system.
-#export DH_VERBOSE = 1
-
-
-# See FEATURE AREAS in dpkg-buildflags(1).
-#export DEB_BUILD_MAINT_OPTIONS = hardening=+all
-
-# See ENVIRONMENT in dpkg-buildflags(1).
-# Package maintainers to append CFLAGS.
-#export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
-# Package maintainers to append LDFLAGS.
-#export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
-
+# Cargo.lock pins every dependency. For an offline build, vendor the
+# crates first (see README.md).
+export CARGO_TARGET_DIR = $(CURDIR)/target
 
 %:
 	dh $@
 
+override_dh_auto_configure:
 
-# dh_make generated override targets.
-# This is an example for Cmake (see <https://bugs.debian.org/641051>).
-#override_dh_auto_configure:
-#	dh_auto_configure -- \
-#	-DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH)
+override_dh_auto_build:
+	cargo build --release --locked
+
+override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	cargo test --release --locked
+endif
+
+override_dh_auto_install:
+	install -D -m 0755 target/release/sway-audio-idle-inhibit \
+		debian/sway-audio-idle-inhibit/usr/bin/sway-audio-idle-inhibit
+	install -D -m 0644 sway-audio-idle-inhibit.service \
+		debian/sway-audio-idle-inhibit/usr/lib/systemd/user/sway-audio-idle-inhibit.service
+
+override_dh_auto_clean:
+	rm -rf target
