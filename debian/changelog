@@ -1,3 +1,19 @@
+sway-audio-idle-inhibit (2.0.4+rs1) resolute; urgency=medium
+
+  * Rust port of sway-audio-idle-inhibit as of 2.0.3 (regolith-linux
+    4521b18), plus upstream #11; upstream #10 does not apply to the port.
+    See README.md for the status and the differences from upstream.
+  * Port to Rust (libpulse-binding, zbus); build with cargo instead of meson.
+  * Inhibit idle through gnome-session (org.gnome.SessionManager.Inhibit,
+    idle flag) instead of a logind lock, so both Regolith sessions honour it;
+    the user unit now runs in regolith-x11 as well as regolith-wayland.
+  * Keep running without the session manager or the sound server, and
+    reconnect to either when it comes back.
+  * Level meters (peak-detect or stream.monitor recordings) never count.
+  * New options: --delay SECONDS, --sink-only, --source-only.
+
+ -- rego-port-bot <339843353+rego-port-bot@users.noreply.github.com>  Mon, 09 Nov 2026 12:00:00 +0000
+
 sway-audio-idle-inhibit (2.0.3) jammy; urgency=medium
 
   * fix: run only in the Regolith Wayland session, not in the X11 session,

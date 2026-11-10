@@ -1,6 +1,6 @@
 [package]
 name = "sway-audio-idle-inhibit"
-version = "2.1.0"
+version = "2.0.4"
 edition = "2021"
 rust-version = "1.89"
 description = "Prevents the session from going idle while audio plays or records"
